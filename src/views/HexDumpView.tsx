@@ -1,10 +1,14 @@
 import * as React from "react";
+import useScrollbarSize from "react-scrollbar-size";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
+
+import { getChar } from "../utils/getChar";
+import { getRowHeight } from "../utils/getRowHeight";
+import { DEFAULT_RENDER_SETTING, RenderSetting } from "../utils/RenderSetting";
 
 import { Border } from "./subViews/Border";
 import { DataRow } from "./subViews/DataRow";
 import { Ruler } from "./subViews/Ruler";
-import { getSize } from "./subViews/utils";
 
 /** Props for hex dump view. */
 type HexDumpViewProps = {
@@ -16,102 +20,82 @@ type HexDumpViewProps = {
 
   /** Font size. (default: "1rem") */
   fontSize?: string | number;
+} & Partial<RenderSetting>;
 
-  /** Row height. (default: fontSize) */
-  rowHeight?: number;
-
-  verticalBarChar?: string;
-  horizontalBarChar?: string;
-  crossBarChar?: string;
-
-  /** Show header flag. (default: true) */
-  showHeader?: boolean;
-
-  /** Show footer flag. (default: true) */
-  showFooter?: boolean;
-
-  /** Show offset flag. (default: true) */
-  showOffset?: boolean;
-
-  /** Show character flag. (default: true) */
-  showCharacter?: boolean;
+const DEFAULT_PROPS: Required<HexDumpViewProps> = {
+  data: new Uint8Array(0),
+  fontFamily: "monospace",
+  fontSize: "1rem",
+  ...DEFAULT_RENDER_SETTING,
 };
 
 /** Hex dump view. */
 export const HexDumpView: React.VFC<HexDumpViewProps> = ({
   data,
-  fontFamily = "monospace",
-  fontSize = "1rem",
-  rowHeight = getSize("monospace", "1rem"),
-  verticalBarChar = "|",
-  horizontalBarChar = "-",
-  crossBarChar = "+",
-  showHeader = true,
-  showFooter = true,
-  showOffset = true,
-  showCharacter = true,
-}: HexDumpViewProps): React.ReactElement | null => {
-  const style: React.CSSProperties = {
-    fontFamily: fontFamily ?? "monospace",
-    fontSize: fontSize ?? "1em",
-    lineHeight: "1",
+  fontFamily = DEFAULT_PROPS.fontFamily,
+  fontSize = DEFAULT_PROPS.fontSize,
+  rowHeight,
+  verticalBarChar,
+  horizontalBarChar,
+  crossBarChar,
+  showHeader,
+  showFooter,
+  showOffset,
+  showCharacter,
+}: HexDumpViewProps = DEFAULT_PROPS): React.ReactElement | null => {
+  const scrollBarSize = useScrollbarSize();
+  const viewStyle: React.CSSProperties = {
+    fontFamily,
+    fontSize,
+    lineHeight: 1,
     background: "#eee",
     whiteSpace: "pre",
   };
 
-  const vertical = `${verticalBarChar}|`.slice(0, 1);
-  const horizontal = `${horizontalBarChar}-`.slice(0, 1);
-  const cross = `${crossBarChar}+`.slice(0, 1);
-  const offsetWidth = (data.length - 1).toString(16).length;
+  const height = rowHeight ?? getRowHeight(fontFamily, fontSize);
 
-  const renderItem = ({
+  const setting: RenderSetting = {
+    offsetLabelWidth: (data.length - 1).toString(16).length,
+    rowHeight: height,
+    verticalBarChar: getChar(verticalBarChar, DEFAULT_PROPS.verticalBarChar),
+    horizontalBarChar: getChar(
+      horizontalBarChar,
+      DEFAULT_PROPS.horizontalBarChar,
+    ),
+    crossBarChar: getChar(crossBarChar, DEFAULT_PROPS.crossBarChar),
+    showHeader: showHeader !== false,
+    showFooter: showFooter !== false,
+    showOffset: showOffset !== false,
+    showCharacter: showCharacter !== false,
+  };
+
+  const renderDataRow = ({
     index,
+    style,
   }: ListChildComponentProps): React.ReactElement => (
-    <DataRow
-      data={data}
-      offset={index}
-      offsetWidth={offsetWidth}
-      vertical={vertical}
-      showOffset={showOffset}
-      showCharacter={showCharacter}
-    />
+    <div style={style}>
+      <DataRow data={data} offset={index * 16} setting={setting} />
+    </div>
   );
 
   return (
-    <div style={style}>
-      <Ruler
-        visible={showHeader}
-        vertical={vertical}
-        offsetWidth={offsetWidth}
-        showOffset={showOffset}
-        showCharacter={showCharacter}
-      />
-      <Border
-        visible={showHeader}
-        cross={cross}
-        horizontal={horizontal}
-        offsetWidth={offsetWidth}
-        showOffset={showOffset}
-        showCharacter={showCharacter}
-      />
-      <FixedSizeList height={150} itemCount={999} itemSize={50} width={300}>
-        {renderItem}
+    <div style={viewStyle}>
+      <Border visible={showHeader} setting={setting} />
+      <Ruler visible={showHeader} setting={setting} />
+      <Border setting={setting} />
+      <FixedSizeList
+        width={`calc(${showOffset ? 1 + setting.offsetLabelWidth + 1 : 0}ch + ${
+          16 * 3 + 3
+        }ch + ${showCharacter ? 17 : 0}ch +${scrollBarSize.width}px)`}
+        height={height * 16}
+        itemCount={Math.floor(data.length / 16)}
+        itemSize={height}
+      >
+        {renderDataRow}
       </FixedSizeList>
-      <Border
-        visible={showFooter}
-        cross={cross}
-        horizontal={horizontal}
-        offsetWidth={offsetWidth}
-        showOffset={showOffset}
-        showCharacter={showCharacter}
-      />
-      <Ruler
-        visible={showFooter}
-        vertical={vertical}
-        offsetWidth={offsetWidth}
-        showOffset={showOffset}
-        showCharacter={showCharacter}
-      />
+      <Border setting={setting} />
+      <Ruler visible={showFooter} setting={setting} />
+      <Border visible={showFooter} setting={setting} />
     </div>
   );
 };

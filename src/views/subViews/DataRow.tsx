@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { RenderSetting } from "../../utils/RenderSetting";
+
 import { Block } from "./Block";
 import { DataChar } from "./DataChar";
 import { DataHex } from "./DataHex";
@@ -12,25 +14,22 @@ const formatOffset = (offset: number, offsetWidth: number): string =>
 type DataRowProps = {
   offset: number;
   data: Uint8Array;
-  vertical: string;
-  offsetWidth: number;
-  showOffset?: boolean;
-  showCharacter?: boolean;
+  setting: RenderSetting;
 };
 
 /** data row. */
 export const DataRow: React.VFC<DataRowProps> = ({
   offset,
   data,
-  vertical,
-  offsetWidth,
-  showOffset,
-  showCharacter,
+  setting,
 }: DataRowProps): React.ReactElement | null => (
   <Row>
-    <Block content={vertical} visible={showOffset} />
-    <Block content={formatOffset(offset, offsetWidth)} visible={showOffset} />
-    <Block content={vertical} />
+    <Block content={setting.verticalBarChar} visible={setting.showOffset} />
+    <Block
+      content={formatOffset(offset, setting.offsetLabelWidth)}
+      visible={setting.showOffset}
+    />
+    <Block content={setting.verticalBarChar} />
     <Block content=" " />
     <DataHex value={data[offset]} />
     <Block content=" " />
@@ -64,7 +63,7 @@ export const DataRow: React.VFC<DataRowProps> = ({
     <Block content=" " />
     <DataHex value={data[offset + 15]} />
     <Block content=" " />
-    <Block content={vertical} />
+    <Block content={setting.verticalBarChar} />
     <DataChar value={data[offset]} />
     <DataChar value={data[offset + 1]} />
     <DataChar value={data[offset + 2]} />
@@ -81,7 +80,7 @@ export const DataRow: React.VFC<DataRowProps> = ({
     <DataChar value={data[offset + 13]} />
     <DataChar value={data[offset + 14]} />
     <DataChar value={data[offset + 15]} />
-    <Block content={vertical} visible={showCharacter} />
+    <Block content={setting.verticalBarChar} visible={setting.showCharacter} />
   </Row>
 );
 

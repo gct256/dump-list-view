@@ -1,47 +1,40 @@
 import * as React from "react";
 
+import { isSameRenderSetting, RenderSetting } from "../../utils/RenderSetting";
+
 import { Block } from "./Block";
 import { Row } from "./Row";
 
 /** Props for border. */
 type BorderProps = {
   visible?: boolean;
-  cross: string;
-  horizontal: string;
-  offsetWidth: number;
-  showOffset?: boolean;
-  showCharacter?: boolean;
+  setting: RenderSetting;
 };
 
 /** Border. */
 export const Border: React.VFC<BorderProps> = React.memo(
-  ({
-    visible,
-    cross,
-    horizontal,
-    offsetWidth,
-    showOffset,
-    showCharacter,
-  }: BorderProps): React.ReactElement | null => (
+  ({ visible, setting }: BorderProps): React.ReactElement | null => (
     <Row visible={visible}>
-      <Block content={cross} visible={showOffset} />
+      <Block content={setting.crossBarChar} visible={setting.showOffset} />
       <Block
-        content={horizontal.repeat(Math.max(6, offsetWidth + 1))}
-        visible={showOffset}
+        content={setting.horizontalBarChar.repeat(
+          Math.max(6, setting.offsetLabelWidth + 1),
+        )}
+        visible={setting.showOffset}
       />
-      <Block content={cross} />
-      <Block content={horizontal.repeat(49)} />
-      <Block content={cross} />
-      <Block content={horizontal.repeat(16)} visible={showCharacter} />
-      <Block content={cross} visible={showCharacter} />
+      <Block content={setting.crossBarChar} />
+      <Block content={setting.horizontalBarChar.repeat(49)} />
+      <Block content={setting.crossBarChar} />
+      <Block
+        content={setting.horizontalBarChar.repeat(16)}
+        visible={setting.showCharacter}
+      />
+      <Block content={setting.crossBarChar} visible={setting.showCharacter} />
     </Row>
   ),
   (prev, next) =>
-    prev.cross === next.cross &&
-    prev.horizontal === next.horizontal &&
     prev.visible === next.visible &&
-    prev.showOffset === next.showOffset &&
-    prev.showCharacter === next.showCharacter,
+    isSameRenderSetting(prev.setting, next.setting),
 );
 
 Border.displayName = "Ruler";

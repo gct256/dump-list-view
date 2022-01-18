@@ -7,6 +7,9 @@ import { Checkbox } from "./views/Checkbox";
 
 const data = new Uint8Array(0x10000);
 
+for (let i = 0; i < 256; i += 1) data[i] = i;
+for (let i = 256; i < data.length; i += 1) data[i] = Math.random() * 256;
+
 const Example: React.VFC = (): React.ReactElement => {
   const [showHeader, setShowHeader] = React.useState(true);
   const [showFooter, setShowFooter] = React.useState(true);

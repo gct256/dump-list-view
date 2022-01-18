@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { isSameRenderSetting, RenderSetting } from "../../utils/RenderSetting";
+
 import { Block } from "./Block";
 import { Row } from "./Row";
 import { Space } from "./Space";
@@ -7,29 +9,20 @@ import { Space } from "./Space";
 /** Props for ruler. */
 type RulerProps = {
   visible?: boolean;
-  vertical: string;
-  offsetWidth: number;
-  showOffset?: boolean;
-  showCharacter?: boolean;
+  setting: RenderSetting;
 };
 
 /** Ruler. */
 export const Ruler: React.VFC<RulerProps> = React.memo(
-  ({
-    visible,
-    vertical,
-    offsetWidth,
-    showOffset,
-    showCharacter,
-  }: RulerProps): React.ReactElement | null => (
+  ({ visible, setting }: RulerProps): React.ReactElement | null => (
     <Row visible={visible}>
-      <Block content={vertical} visible={showOffset} />
+      <Block content={setting.verticalBarChar} visible={setting.showOffset} />
       <Block
-        content={"OFFSET".padStart(offsetWidth + 1)}
-        visible={showOffset}
+        content={"OFFSET".padStart(setting.offsetLabelWidth + 1)}
+        visible={setting.showOffset}
       />
 
-      <Block content={vertical} />
+      <Block content={setting.verticalBarChar} />
       <Space />
       <Block content="+0" />
       <Space />
@@ -63,32 +56,33 @@ export const Ruler: React.VFC<RulerProps> = React.memo(
       <Space />
       <Block content="+F" />
       <Space />
-      <Block content={vertical} />
+      <Block content={setting.verticalBarChar} />
 
-      <Block content="0" visible={showCharacter} />
-      <Block content="1" visible={showCharacter} />
-      <Block content="2" visible={showCharacter} />
-      <Block content="3" visible={showCharacter} />
-      <Block content="4" visible={showCharacter} />
-      <Block content="5" visible={showCharacter} />
-      <Block content="6" visible={showCharacter} />
-      <Block content="7" visible={showCharacter} />
-      <Block content="8" visible={showCharacter} />
-      <Block content="9" visible={showCharacter} />
-      <Block content="A" visible={showCharacter} />
-      <Block content="B" visible={showCharacter} />
-      <Block content="C" visible={showCharacter} />
-      <Block content="D" visible={showCharacter} />
-      <Block content="E" visible={showCharacter} />
-      <Block content="F" visible={showCharacter} />
-      <Block content={vertical} visible={showCharacter} />
+      <Block content="0" visible={setting.showCharacter} />
+      <Block content="1" visible={setting.showCharacter} />
+      <Block content="2" visible={setting.showCharacter} />
+      <Block content="3" visible={setting.showCharacter} />
+      <Block content="4" visible={setting.showCharacter} />
+      <Block content="5" visible={setting.showCharacter} />
+      <Block content="6" visible={setting.showCharacter} />
+      <Block content="7" visible={setting.showCharacter} />
+      <Block content="8" visible={setting.showCharacter} />
+      <Block content="9" visible={setting.showCharacter} />
+      <Block content="A" visible={setting.showCharacter} />
+      <Block content="B" visible={setting.showCharacter} />
+      <Block content="C" visible={setting.showCharacter} />
+      <Block content="D" visible={setting.showCharacter} />
+      <Block content="E" visible={setting.showCharacter} />
+      <Block content="F" visible={setting.showCharacter} />
+      <Block
+        content={setting.verticalBarChar}
+        visible={setting.showCharacter}
+      />
     </Row>
   ),
   (prev, next) =>
-    prev.vertical === next.vertical &&
     prev.visible === next.visible &&
-    prev.showOffset === next.showOffset &&
-    prev.showCharacter === next.showCharacter,
+    isSameRenderSetting(prev.setting, next.setting),
 );
 
 Ruler.displayName = "Ruler";
