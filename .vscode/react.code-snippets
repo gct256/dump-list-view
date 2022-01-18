@@ -1,0 +1,59 @@
+{
+  "react component (props + children)": {
+    "prefix": "react",
+    "scope": "typescriptreact",
+    "body": [
+      "import * as React from 'react';",
+      "",
+      "/** Props for ${1:ビュー名}. */",
+      "type ${TM_FILENAME_BASE/\\.//g}Props = {",
+      "  $2",
+      "};",
+      "",
+      "/** $1. */",
+      "export const ${TM_FILENAME_BASE/\\.//g}: React.FC<${TM_FILENAME_BASE/\\.//g}Props> = ({",
+      "  children,$3",
+      "}: React.PropsWithChildren<${TM_FILENAME_BASE/\\.//g}Props>): React.ReactElement | null => (",
+      "  <div>{children}</div>$0",
+      ");",
+      "",
+      "${TM_FILENAME_BASE/\\.//g}.displayName = '${TM_FILENAME_BASE}';"
+    ]
+  },
+  "react component (props)": {
+    "prefix": "react",
+    "scope": "typescriptreact",
+    "body": [
+      "import * as React from 'react';",
+      "",
+      "/** Props for ${1:ビュー名}. */",
+      "type ${TM_FILENAME_BASE/\\.//g}Props = {",
+      "  $2",
+      "};",
+      "",
+      "/** $1. */",
+      "export const ${TM_FILENAME_BASE/\\.//g}: React.VFC<${TM_FILENAME_BASE/\\.//g}Props> = ({",
+      "  $3",
+      "}: ${TM_FILENAME_BASE/\\.//g}Props): React.ReactElement | null => (",
+      "  $0",
+      ");",
+      "",
+      "${TM_FILENAME_BASE/\\.//g}.displayName = '${TM_FILENAME_BASE}';"
+    ]
+  },
+  "react component": {
+    "prefix": "react",
+    "scope": "typescriptreact",
+    "description": "compact",
+    "body": [
+      "import * as React from 'react';",
+      "",
+      "/** $1. */",
+      "export const ${TM_FILENAME_BASE/\\.//g}: React.VFC = (): React.ReactElement | null => (",
+      "  $0",
+      ");",
+      "",
+      "${TM_FILENAME_BASE/\\.//g}.displayName = '${TM_FILENAME_BASE}';"
+    ]
+  }
+}
